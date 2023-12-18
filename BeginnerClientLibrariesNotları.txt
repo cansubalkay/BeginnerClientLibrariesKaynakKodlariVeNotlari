@@ -1,0 +1,58 @@
+WRITING A SIMPLE SERVICE AND CLIENT (PYTHON)
+İlk önce bir paket oluştururuz.
+ros2 pkg create --build-type ament_cmake cpp_srvcli --dependencies rclcpp example_interfaces
+örnek olarak bu komut kullanılabilir. 
+Daha sonra package.xml dosyasına daha önceki bölümlerde yaptığımız gibi bağımlılıkları ekliyoruz.
+setup.py dosyasını da aynı şekilde kontrol etmeliyiz.
+Daha sonra service_member_function.py dosyasını oluşturup içine service node u oluşturan Python kodları yazılır.
+bu adımdan sonra ise setup.py dosyasına service için satır eklenir.
+şimdi de client node için client_member_function.py dosyasını oluşturup içine client nodeu oluşturan Python kodları yazılır.
+tekrar  setup.py dosyasına gidip bu sefer bu sefer de client için satır eklenir.
+Çalıştırmadan önce rosdep ile bağımlılıkları kontrol etmeliyiz.
+daha sonra work spaceimize dönüp colcon build ile paketimizi oluştururuz. V yeni bir terminal açıp ros2 run <packet_name> service komutuyla service çalıştırılır. Başka bir terminal daha açılıp ros2 run <package_name> client 2 3 komutuyla (2 veya 3 yerine başka sayılar da verilebilir.) 2+3 =5 döndürülür.
+BU KONUDA HATA YAPTIGIM VE YANLIS CIKTI ALDIGIM DURUMLAR:
+Her yeni terminalde ros2 nin kaynaklanması gerekiyor.
+Bir de dökumantasyondan kopyalayıp kendi kodumuza yapıştırdığımız bölümleri yapıştırırken dikkatli olmamız gerekir. 
+CREATING CUSTOM msg And srv FILES
+Burada da yine daha önce kullandıgımız komutlar yardımıyla yeni paket kurarız. Sonra msg ve srv uzantılı özel tanımlı dosyalar oluştururuz. 
+CMakeLists ve package.xml dosyalarını dökümantasyonda gösterildiği gibi düzenledikten sonra colcon build ile arayüz paketi oluştururuz.
+ros2 interface show >package_name>/msg/<msg_uzantılı_dosyanın_ismi> komutuyla istenen dosyanın içeriği ekrana yazdırılır.
+Daha önceden ya da yeni oluşturacağınız paketlerle de istenen dosyaların arayüzle çıktıları alınabilir. Bunun için node kodlarında, CMakeLists ve package kodlarında birkaç değişiklik yapmak gerekir.
+Bu düzenlemelerden sonra colcon build ile paket oluşturmayı unutmayın!
+Ve yine her yeni terminalde ros2yi kaynaklamayı ve kodları yönergeye göre düzenlemeyi unutmayın.
+IMPLEMENTING CUSTOM INTERFACES
+İlk önce arayüzü tanımlayacağım;
+interface, bir nesnenin belirli bir davranış kümesini tanımlayan bir yapıdır. Bu sayede, nesneler farklı özelliklere  sahip olsa bile, aynı kod bloklarını kullanarak benzer davranışlar sergileyebilirler.
+Arayüz kavramını yeni kavradığım için kafamda oturtmak biraz zor olduğu için gerçek hayatla şu şekil bağlantı kurarak daha iyi anladım;
+Çok fazla araç türü var otomobiller, bisikletler, uçaklar vb. Her araç türü belirli özelliklere sahip olabilir. Örneğin bir arabanın direksiyonu, gaz pedalı ve fren pedalı olabilir. Bu özelliklerin her biri bir sürüş arayüzü tarafından tanımlanabilir. Her araç türü bu arayüzü uygulayarak bu özelliklere sahip olabilir. Bu sayede farklı araç türleri olsa bile hepsi aynı sürüş yöntemlerini kullanarak benzer davranışlar sergileyebilirler.
+Bu uygulama için önceki paketlerinizi de kullanabilirsiniz ancak bir karışıklık olmaması adına ben ros2 pkg create... komutuyla yeni bir paket oluşturmayı daha uygun buldum. Paketimizin içine msg uzantılı yeni bir dosya açıp mesaj içeriğini de bu dosyanın içine yazalım.
+Bu değişikliği dökumantasyonda gösterildiği gibi CMake ve package.xml dosyalarında da düzenleyelim.
+Bu mesajı kullanacak olan kod yazılır .cpp uzantılı dosya ile.
+ Dahas sonra CMake de gösterildiği gibi yayıncı oluşturup arayüze de karşı bağlantı oluşturmak gerekir.
+ Tüm bunları doğru ve eksiksiz bir şekilde yaptıktan sonra colcon build ile yeni paket oluşturup her yeni terminalde ros2yi kaynaklayarak oluşturduğumuz arayüzü mesaj yazdırmakta kullanabiliriz. 
+ Tekrar yeni bir terminal açıp(ros2yi kaynaklamayı unutmadan) ros2 topic echo/<cpp_uzantılı_dosya_ismi> kodu ile mesajın dosya topici ile yayınlandıgını dogrulayabiliriz.
+ USING PARAMETERS IN A CLASS (PYTHON)
+Kendi düğümlerinizi oluştururken bazen başlatma dosyasından ayarlanabilecek parametreler eklemeniz gerekecek.
+Şimdi denemek için bir paket oluşturalım ros2 pkg create komutuyla.
+*Eğer --dependencies ile kullanırsak bu komutu gerekli bağımlılık satırlarını ekler. 
+Gibi bir bilgi var dökumantasyonda ancak bu bende işe yaramadı. package.xml ve CMake dosyalarını kontrol etmekte fayda var. 
+Bunlardan sonra Python kodumuzla düğümü oluştururuz. Ve dökümantasyonda yer alan diğer dosya kodlarını düzenledikten sonra çalıştırılmaya hazırız. Ancak önce rosdep ile bağımlılıkları kontrol etmek gerekir. Kontrol ettikten sonra colcon build ile ros2_ws (bu benim oluşturduğum work spaceim) konumunda yeni paketi oluştururuz. Sonra yeni terminalle work space konumuna gidip (ros2 yi kaynaklamayı unutmadan) ros2 run ile düğümü çalıştırırız. Başka bir terminale ros2 param list komutuyla parametreyi görüntüleriz Değiştirmek için ros2 param set <> komutu kullanılabilir ancak bu yöntemle sadece bir satırlık değişecektir çıktı. Veya bu komut yerine launch dosyası ile de değiştirilebilir.
+USING ros2doctor TO IDENTIFY ISSUES
+ROS 2 kurulumunuz beklendiği gibi çalışmadığında ros2doctor aracıyla ayarlarını kontrol edebilirsiniz.ros2doctor, sürüm, ağ, ortam, çalışan sistemler ve daha fazlası dahil olmak üzere ROS 2'nin tüm yönlerini kontrol eder ve sizi olası hatalar ve sorunların nedenleri konusunda uyarır.
+ROS2DOCTOR KULLANIMI:
+İlk önce her yeni terminalde yaptığımız gibi ros2 yi kaynaklamalıyız. Terminale ros2 doctor yazarak çalıştırabiliriz.Eğer ROS2 kurulumunda bir sıkıntı yoksa All <n> checks passed çıktısını alırız.
+ros2 doctor ile bir sistem de kontrol edilebilir. Örnek olarak ros2 run turtlesim turtlesim_node ve teleop komutunu da girdikten sonra başka bir terminalde ros2 doctoru çalıştırdığımızda 2 satır UserWarnin çıktısı alırız.Bunu çözmek içintopic echo koduyla 2 farklı terminalde color_sensor ve /pose konularını çalıştırırız. 
+Çok sayıda düğümün bulunduğu karmaşık bir sistemde ros2doctor, iletişim sorunlarının olası nedenlerini belirlemek açısından çok değerli olabilir.
+ros2 doctoru --report argümanıyla kullanırsak daha ayrıntılı bir rapor alırız. 
+  ros2doctor bir hata ayıklama aracı değildir, kodunuzdaki veya sisteminizin uygulama tarafındaki hatalara yardımcı olmaz.
+
+CREATING AND USING PLUGINS(C++)
+Pluginlib, eklentileri bir ros paketi içinden yüklemek ve kaldırmak için kullanılan bir C++ kütüphanesidir.
+   Eklentiler, bir çalışma zamanı kitaplığından yüklenen dinamik olarak yüklenebilen sınıflardır. Uygulama kaynak koduna ihtiyaç duymadan uygulama davranışını genişletmek/değiştirmek için kullanışlıdır.
+Sınıf için yeni bir paket oluştururuz. Dökümantasyonda belirtildiği gibi dosyaları düzenledikten sonra Eklenti paketi oluşturulur. Yine dökümantasyondaki adımlar takip edilerek gerekli dosyalardaki gerekli düzenlemeler yapılır. Tüm bu adımlar doğru bir şekilde uygulandıktan sonra work spaceimizde colcon build ile yeni paket oluştururuz. 
+Daha sonra düğümü ros2 run ile çalıştırdığımızda eklentileri kullanmış oluruz.
+
+Bu çalışmada hatalı çıktı almama sebep olan birkaç durum;
+!publisher_member dosyasının içeriğini de subscriber_member dosyasına eklediğim için talker ve listenerı farklı terminallerde çalıştırmama rağmen ikisi de talker gibi çıktı verdi.
+!Works space in olduğu dizine gittikten sonra ros2yi kaynaklamayı unuttugum icin de hata aldım.
+!Dökumantasyonda yer alan kodları CMake, package.xml gibi dosyalara yapıştırırken yanlış konumlara yapıştırdığım için colcon build komutunun çıktısında hatalar aldım.
